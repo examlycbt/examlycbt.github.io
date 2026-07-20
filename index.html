@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CBT Practice Platform</title>
+<style>
+:root{
+  --bg:#0a0f1c; --bg2:#0e1524; --panel:#131b2e; --panel2:#182238; --panel3:#1e2a44;
+  --border:#28324c; --border2:#374266; --text:#e9edf7; --muted:#8d9ab8; --muted2:#6d7999;
+  --blue:#3b7bf6; --blue-dark:#1f4fc0; --blue-glow:rgba(59,123,246,.18);
+  --green:#1fae5c; --green-glow:rgba(31,174,92,.16);
+  --red:#e14b4b; --red-glow:rgba(225,75,75,.16);
+  --gold:#c99a2e; --grey:#4c5674; --purple:#8b5cf6;
+  --radius:12px; --radius-sm:8px;
+  --font:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  --serif:Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font);height:100%;}
+body{min-height:100vh;}
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+h1,h2,h3,h4{font-family:var(--serif);margin:0 0 6px;}
+a{color:var(--blue);}
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+
+.btn{border:1px solid var(--border2);background:var(--panel2);color:var(--text);padding:10px 18px;
+  border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-weight:600;font-family:var(--font);
+  transition:all .15s;}
+.btn:hover{border-color:var(--blue);}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-primary{background:linear-gradient(180deg,var(--blue),var(--blue-dark));border-color:var(--blue-dark);color:#fff;}
+.btn-primary:hover{filter:brightness(1.08);}
+.btn-green{background:linear-gradient(180deg,#1fae5c,#158048);border-color:#158048;color:#fff;}
+.btn-red{background:linear-gradient(180deg,#e14b4b,#b32f2f);border-color:#b32f2f;color:#fff;}
+.btn-ghost{background:transparent;}
+.btn-sm{padding:6px 12px;font-size:12.5px;}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:18px;}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.03em;}
+.pill-blue{background:var(--blue-glow);color:#8fb3ff;}
+.pill-gold{background:rgba(201,154,46,.18);color:#e5bd63;}
+.pill-green{background:var(--green-glow);color:#63d999;}
+.pill-red{background:var(--red-glow);color:#ff9494;}
+.pill-grey{background:rgba(120,130,160,.18);color:var(--muted);}
+
+input[type=text],input[type=number]{background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  padding:9px 12px;border-radius:var(--radius-sm);font-size:14px;font-family:var(--font);max-width:100%;box-sizing:border-box;}
+input[type=text]:focus,input[type=number]:focus{outline:none;border-color:var(--blue);}
+label.chk{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;flex-wrap:wrap;}
+input[type=checkbox],input[type=radio]{accent-color:var(--blue);width:16px;height:16px;cursor:pointer;}
+
+/* ---------------- LANDING ---------------- */
+.landing-wrap{max-width:820px;margin:0 auto;padding:48px 20px 80px;}
+.brand{text-align:center;margin-bottom:34px;}
+.brand .logo{font-size:38px;}
+.brand h1{font-size:30px;color:#fff;}
+.brand p{color:var(--muted);margin:0;}
+.file-drop{display:block;border:2px dashed var(--border2);border-radius:var(--radius);padding:34px;text-align:center;
+  cursor:pointer;color:var(--muted);transition:.15s;}
+.file-drop:hover, .file-drop.drag{border-color:var(--blue);background:var(--blue-glow);color:#cfe0ff;}
+.file-drop .big{font-size:30px;margin-bottom:8px;}
+.upload-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+.upload-row input{flex:1;min-width:200px;}
+.bank-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;flex-wrap:wrap;gap:8px;}
+.bank-row .meta{color:var(--muted);font-size:12.5px;}
+.bank-row .name{font-weight:700;color:#fff;}
+.empty-note{color:var(--muted2);font-size:13.5px;padding:6px 2px;}
+.hist-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel2);
+  border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;cursor:pointer;flex-wrap:wrap;gap:8px;}
+.hist-row:hover{border-color:var(--blue);}
+.hist-score{font-weight:800;color:#fff;font-size:15px;}
+
+/* ---------------- CONFIG ---------------- */
+.cfg-wrap{max-width:920px;margin:0 auto;padding:30px 20px 80px;}
+.cfg-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;}
+.back-btn{background:var(--panel2);border:1px solid var(--border2);border-radius:99px;width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:16px;}
+.back-btn:hover{border-color:var(--blue);}
+.section-title{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);font-weight:800;margin-bottom:12px;}
+.topic-group{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;overflow:hidden;}
+.topic-group-head{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--panel2);
+  cursor:pointer;font-weight:700;}
+.topic-group-body{padding:6px 14px 10px;}
+.topic-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--border);font-size:13.5px;flex-wrap:wrap;}
+.topic-row:first-child{border-top:none;}
+.topic-row .chk{flex:1;min-width:150px;}
+.count-badge{color:var(--muted);font-size:12px;}
+.order-label{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em;}
+.topic-order-sel{background:var(--bg2);border:1px solid var(--border2);color:var(--text);border-radius:6px;
+  padding:4px 6px;font-size:12px;font-family:var(--font);width:52px;cursor:pointer;}
+.topic-order-sel:disabled{opacity:.4;cursor:not-allowed;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:720px){.grid2,.grid3{grid-template-columns:1fr;}}
+@media(max-width:480px){
+  .card{padding:14px;}
+  #qCountInput,#timerMinutes{width:74px !important;}
+  .radio-opt input.mini{width:48px;}
+}
+.radio-opt{display:flex;align-items:center;gap:8px;padding:9px 0;font-size:14px;flex-wrap:wrap;}
+.radio-opt input.mini{width:56px;max-width:22vw;margin-left:6px;}
+.diffneg-item{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;}
+.diffneg-item .mini{margin-left:4px;}
+.summary-strip{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0 22px;}
+.stat-chip{background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;text-align:center;min-width:110px;}
+.stat-chip .n{font-size:20px;font-weight:800;color:#fff;}
+.stat-chip .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+.sticky-start{position:sticky;bottom:0;background:linear-gradient(0deg,var(--bg) 60%,transparent);padding:16px 0 4px;text-align:right;}
+
+/* ---------------- TEST PAGE ---------------- */
+.test-top{background:linear-gradient(180deg,#111a30,#0d1526);border-bottom:1px solid var(--border);
+  padding:10px 18px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:20;}
+.test-top h2{font-size:16px;margin:0;color:#fff;}
+.test-top .tag{font-size:10.5px;background:var(--blue-glow);color:#8fb3ff;padding:2px 8px;border-radius:99px;font-weight:700;}
+.spacer{flex:1;}
+.timer-box{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border2);
+  padding:7px 14px;border-radius:var(--radius-sm);font-weight:800;font-size:15px;}
+.timer-box.low{border-color:var(--red);color:#ff9494;animation:pulse 1s infinite;}
+@keyframes pulse{50%{opacity:.55;}}
+.qstrip-wrap{display:flex;align-items:center;gap:8px;background:var(--bg2);border-bottom:1px solid var(--border);padding:9px 14px;}
+.qstrip-track{display:flex;gap:6px;overflow-x:auto;flex:1;justify-content:center;scroll-behavior:smooth;padding:2px 0;}
+.qstrip-arrow{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);background:var(--panel2);
+  color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;}
+.qstrip-arrow:hover{border-color:var(--blue);}
+.qstrip-track .qn{min-width:30px;height:30px;border-radius:7px;background:var(--panel2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--muted);flex-shrink:0;}
+.qstrip-track .qn.active{outline:2px solid var(--gold);}
+
+.test-body{display:flex;gap:0;max-width:1400px;margin:0 auto;align-items:flex-start;}
+.test-main{flex:1;min-width:0;padding:22px 22px 120px;}
+.test-side{width:330px;flex-shrink:0;padding:22px 18px;border-left:1px solid var(--border);position:sticky;top:96px;
+  max-height:calc(100vh - 96px);overflow-y:auto;}
+
+.qcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;}
+.qnum-badge{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;
+  justify-content:center;font-weight:800;font-size:13.5px;}
+.qtimer{font-size:12.5px;color:var(--muted);font-weight:700;}
+.marks-tag{font-size:12px;font-weight:800;background:var(--panel2);border:1px solid var(--border2);
+  padding:5px 10px;border-radius:99px;}
+.marks-tag .pos{color:#63d999;}
+.marks-tag .neg{color:#ff9494;}
+.topic-tag{font-size:11px;color:var(--muted);}
+.diff-tag{font-size:10.5px;padding:2px 8px;border-radius:99px;font-weight:700;}
+.diff-Easy{background:var(--green-glow);color:#63d999;}
+.diff-Medium{background:rgba(201,154,46,.18);color:#e5bd63;}
+.diff-Hard{background:var(--red-glow);color:#ff9494;}
+.qtext{font-size:16.5px;line-height:1.65;color:#fff;margin:6px 0 20px;font-family:var(--serif);}
+.qtext sup{font-size:64%;}
+.qtext sub{font-size:64%;}
+.opt-list{display:flex;flex-direction:column;gap:11px;}
+.opt{display:flex;align-items:center;gap:13px;border:1.5px solid var(--border2);border-radius:var(--radius-sm);
+  padding:13px 16px;cursor:pointer;background:var(--panel2);transition:.12s;}
+.opt:hover{border-color:var(--blue);}
+.opt .badge{width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:12.5px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.opt .otext{font-size:15px;line-height:1.5;}
+.opt.selected{border-color:var(--blue);background:var(--blue-glow);}
+.opt.correct{border-color:var(--green);background:var(--green-glow);}
+.opt.correct .badge{background:var(--green);}
+.opt.wrong{border-color:var(--red);background:var(--red-glow);}
+.opt.wrong .badge{background:var(--red);}
+.opt.locked{cursor:default;}
+.numeric-input-row{display:flex;align-items:center;gap:10px;}
+.numeric-input-row input{width:180px;font-size:16px;padding:11px 14px;}
+
+.solution-box{margin-top:18px;border-top:1px dashed var(--border2);padding-top:16px;}
+.solution-box h4{color:var(--gold);font-size:13px;text-transform:uppercase;letter-spacing:.04em;}
+.solution-box p{font-size:14.5px;line-height:1.6;color:#dbe1f0;}
+
+.actions-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px;}
+.actions-bar .spacer{flex:1;}
+.showans-toggle{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted);}
+.switch{position:relative;width:40px;height:22px;background:var(--panel3);border-radius:99px;cursor:pointer;border:1px solid var(--border2);}
+.switch .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:.15s;}
+.switch.on{background:var(--blue-glow);border-color:var(--blue);}
+.switch.on .knob{left:20px;background:var(--blue);}
+
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.legend .li{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);}
+.legend .dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;}
+.legend .n{margin-left:auto;font-weight:800;color:#fff;}
+.dot-green{background:var(--green);} .dot-red{background:var(--red);} .dot-blue{background:var(--blue);}
+.dot-gold{background:var(--gold);} .dot-grey{background:var(--panel3);border:1px solid var(--border2);}
+
+.subject-block{margin-bottom:14px;}
+.subject-block h4{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;}
+.palette-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.palette-grid .pn{aspect-ratio:1;border-radius:6px;background:var(--panel2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;cursor:pointer;color:var(--muted);position:relative;}
+.palette-grid .pn.active{outline:2px solid var(--gold);}
+
+.submit-fab{position:fixed;right:22px;bottom:22px;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+
+/* ---------------- SUMMARY / SCORE ---------------- */
+.res-wrap{max-width:900px;margin:0 auto;padding:40px 20px 80px;}
+.score-hero{display:flex;align-items:center;gap:34px;flex-wrap:wrap;}
+.donut-wrap{position:relative;width:170px;height:170px;flex-shrink:0;}
+.donut-wrap .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-wrap .center .big{font-size:26px;font-weight:800;color:#fff;}
+.donut-wrap .center .small{font-size:11.5px;color:var(--muted);}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;flex:1;min-width:260px;}
+.stat-grid .box{background:var(--panel2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;}
+.stat-grid .box .v{font-size:19px;font-weight:800;color:#fff;}
+.stat-grid .box .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;}
+table.sw{width:100%;border-collapse:collapse;font-size:13.5px;}
+table.sw th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.03em;
+  border-bottom:1px solid var(--border2);padding:8px 10px;}
+table.sw td{padding:9px 10px;border-bottom:1px solid var(--border);}
+.bar-track{width:100%;height:8px;background:var(--panel3);border-radius:99px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--green));}
+.review-item{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:9px;overflow:hidden;}
+.review-head{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:var(--panel2);}
+.review-head .st-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.review-head .qn{font-size:14px;flex:1;}
+.review-head .t{font-size:12px;color:var(--muted);}
+.review-body{padding:14px 16px;display:none;font-size:13.5px;line-height:1.6;background:var(--bg2);}
+.review-body.open{display:block;}
+.review-body .opt-mini{padding:7px 10px;border-radius:6px;margin-bottom:5px;border:1px solid var(--border2);}
+.review-body .opt-mini.correct{border-color:var(--green);background:var(--green-glow);}
+.review-body .opt-mini.wrong{border-color:var(--red);background:var(--red-glow);}
+.footer-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--panel3);border:1px solid var(--border2);
+  color:#fff;padding:10px 18px;border-radius:99px;font-size:13.5px;z-index:100;opacity:0;pointer-events:none;transition:.25s;}
+.toast.show{opacity:1;top:22px;}
+
+/* ---------------- LIGHT THEME ---------------- */
+body.light-theme{
+  --bg:#eef1f8; --bg2:#ffffff; --panel:#ffffff; --panel2:#f2f4fa; --panel3:#e7eaf4;
+  --border:#dde2ef; --border2:#c7cee2; --text:#161c2c; --muted:#5b6683; --muted2:#818da8;
+  --blue-glow:rgba(59,123,246,.12); --green-glow:rgba(31,174,92,.12); --red-glow:rgba(225,75,75,.12);
+}
+body.light-theme .test-top{background:linear-gradient(180deg,#ffffff,#f2f4fa);}
+body.light-theme .qstrip-wrap{background:var(--panel2);}
+
+/* ---------------- ICON BUTTONS (topbar) ---------------- */
+.icon-btn{background:var(--panel2);border:1px solid var(--border2);border-radius:8px;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text);font-size:15px;flex-shrink:0;}
+.icon-btn:hover{border-color:var(--blue);}
+.icon-btn.active{border-color:var(--blue);background:var(--blue-glow);color:#8fb3ff;}
+.icon-row{display:flex;gap:8px;align-items:center;}
+
+/* ---------------- QCARD HEADER (mode/topic tags) ---------------- */
+.qtype-tag{font-size:9.5px;background:var(--panel3);color:var(--muted);padding:2px 7px;border-radius:99px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+.tag.mode-test{background:var(--red-glow);color:#ff9494;}
+
+/* ---------------- EXAM-STYLE 5-STATE STATUS (palette/qstrip) ---------------- */
+.qstrip-track .qn.status-visited, .palette-grid .pn.status-visited{background:var(--red);color:#fff;border-color:var(--red);}
+.qstrip-track .qn.status-answered, .palette-grid .pn.status-answered{background:var(--green);color:#fff;border-color:var(--green);}
+.qstrip-track .qn.status-marked, .palette-grid .pn.status-marked{background:var(--purple);color:#fff;border-color:var(--purple);}
+.qstrip-track .qn.status-answeredmarked, .palette-grid .pn.status-answeredmarked{background:var(--purple);color:#fff;border-color:var(--purple);position:relative;}
+.qstrip-track .qn.status-answeredmarked::after, .palette-grid .pn.status-answeredmarked::after{
+  content:'';position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--green);border:1px solid #fff;}
+.dot-purple{background:var(--purple);}
+.dot-purple-dot{background:radial-gradient(circle at 68% 30%, var(--green) 3px, var(--purple) 4px);}
+
+/* ---------------- COLLAPSIBLE PANELS ---------------- */
+.qstrip-wrap.hidden{display:none;}
+.test-side.hidden{display:none;}
+.test-body.wide{max-width:1600px;}
+.test-main{display:flex;flex-direction:column;}
+.qcard{display:flex;flex-direction:column;min-height:calc(100vh - 168px);}
+.qcard .actions-bar:last-of-type{margin-top:auto;}
+.side-backdrop{display:none;}
+@media(max-width:1050px){
+  .test-side{display:none;}
+  .test-side.drawer-open{
+    display:block;position:fixed;top:0;right:0;height:100vh;width:min(340px,88vw);
+    z-index:150;padding:70px 18px 22px;box-shadow:-12px 0 32px rgba(0,0,0,.55);
+    overflow-y:auto;border-left:1px solid var(--border);background:var(--panel);
+    animation:sidedrawerIn .2s ease;
+  }
+  @keyframes sidedrawerIn{from{transform:translateX(100%);}to{transform:translateX(0);}}
+  .side-backdrop.show{display:block;position:fixed;inset:0;background:rgba(5,8,16,.55);z-index:140;}
+  .qcard{min-height:calc(100vh - 220px);}
+}
+
+/* ---------------- QCARD HEADER v2: grid layout ---------------- */
+.qcard-top{
+  display:grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  grid-template-rows: auto auto;
+  column-gap:14px; row-gap:6px; align-items:center; margin-bottom:14px;
+}
+.qnum-cell{grid-row:1 / span 2; grid-column:1; display:flex; flex-direction:column; align-items:center; gap:4px;}
+.qnum-cell .qtimer{font-size:10.5px;color:var(--muted2);}
+.qcard-top .marks-tag{grid-row:1; grid-column:2; justify-self:start;}
+.qcard-top .diff-tag{grid-row:1; grid-column:3; justify-self:start;}
+.qcard-top .qtype-tag{grid-row:2; grid-column:2; justify-self:start;}
+.qcard-top .topic-full{grid-row:2; grid-column:3 / span 3; justify-self:start; color:var(--muted); font-size:12.5px;}
+.qcard-top .header-actions{grid-row:1; grid-column:4 / span 2; justify-self:end; display:flex; gap:8px;}
+@media(max-width:640px){
+  .qcard-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;}
+  .qcard-top .topic-full{flex-basis:100%;}
+  .qcard-top .header-actions{margin-left:auto;}
+}
+.marks-tag .pos{margin-right:8px;}
+.review-star{background:transparent;border:1px solid var(--border2);border-radius:50%;width:34px;height:34px;
+  font-size:16px;cursor:pointer;color:var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.review-star:hover{border-color:var(--gold);}
+.review-star.active{background:rgba(139,92,246,.16);border-color:var(--purple);color:var(--purple);}
+.report-btn{background:transparent;border:1px solid var(--border2);border-radius:50%;width:34px;height:34px;
+  font-size:15px;cursor:pointer;color:var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.report-btn:hover{border-color:var(--red);color:#ff9494;}
+
+/* ---------------- REPORT QUESTION MODAL ---------------- */
+.modal-backdrop{position:fixed;inset:0;background:rgba(5,8,16,.65);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.modal-backdrop.open{display:flex;}
+.report-modal{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.report-modal-head{background:linear-gradient(90deg,#2f5bd7,#3b7bf6);padding:16px 20px;display:flex;align-items:center;
+  gap:10px;color:#fff;font-weight:800;font-size:16px;}
+.report-modal-head .back{cursor:pointer;font-size:18px;}
+.report-modal-body{padding:18px 20px;overflow-y:auto;}
+.report-cat{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:10px;cursor:pointer;background:var(--panel2);}
+.report-cat:hover{border-color:var(--blue);}
+.report-cat.selected{border-color:var(--blue);background:var(--blue-glow);}
+.report-cat .icon{width:34px;height:34px;border-radius:50%;background:var(--blue-glow);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;font-size:15px;}
+.report-cat .txt{flex:1;}
+.report-cat .txt b{display:block;font-size:14px;color:var(--text);}
+.report-cat .txt span{font-size:12px;color:var(--muted);}
+.report-cat .chev{color:var(--muted);font-size:18px;}
+.report-modal-foot{display:flex;justify-content:space-between;gap:10px;padding:14px 20px;border-top:1px solid var(--border);}
+.report-textarea{width:100%;min-height:110px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--font);font-size:13.5px;resize:vertical;box-sizing:border-box;}
+.report-charcount{text-align:right;font-size:11px;color:var(--muted2);margin-top:4px;}
+.report-tip{display:flex;gap:8px;background:var(--blue-glow);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:10px 12px;font-size:12px;color:var(--muted);margin-top:12px;}
+.report-section-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ PAGE 0 : LANDING ============ -->
+<section class="page active" id="page-landing">
+  <div class="landing-wrap">
+    <div class="brand">
+      <div class="logo">&#8747;</div>
+      <h1>CBT Practice Platform</h1>
+      <p>Load a question bank, configure your test, and practice like a real exam &mdash; entirely on this device.</p>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Load Question Bank (.md)</div>
+      <label class="file-drop" id="fileDrop">
+        <input type="file" id="fileInput" accept=".md,.txt" hidden>
+        <div class="big">&#128196;</div>
+        <div>Click to choose, or drag &amp; drop your <b>.md</b> question-bank file here</div>
+      </label>
+      <div class="upload-row" id="uploadRow" style="display:none;">
+        <input type="text" id="bankNameInput" placeholder="Save this bank as&hellip; (e.g. Basic Calculus)">
+        <button class="btn btn-primary" id="saveBankBtn">Save &amp; Continue &rarr;</button>
+      </div>
+      <div id="parseSummary" class="empty-note"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Saved Question Banks</div>
+      <div id="savedBanksList"><div class="empty-note">No banks saved yet &mdash; upload one above.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Past Attempts</div>
+      <div id="historyList"><div class="empty-note">No attempts yet. Your scores will appear here after you finish a test.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 1 : CONFIG ============ -->
+<section class="page" id="page-config">
+  <div class="cfg-wrap">
+    <div class="cfg-header">
+      <div class="back-btn" onclick="goLanding()">&larr;</div>
+      <div>
+        <h2 style="margin:0;color:#fff;">Configure Test</h2>
+        <div class="empty-note" id="cfgBankLabel" style="padding:0;"></div>
+      </div>
+    </div>
+
+    <div class="summary-strip" id="cfgStatStrip"></div>
+
+    <div class="card">
+      <div class="section-title">1&nbsp;&middot;&nbsp; Mode</div>
+      <div class="grid2">
+        <div class="radio-opt" style="align-items:flex-start;">
+          <input type="radio" name="testConfigMode" value="practice" id="modePractice" checked style="margin-top:3px;">
+          <label for="modePractice"><b>Practice Mode</b><br><span class="empty-note" style="padding:2px 0 0;">Check Answer &amp; Show Answer available on every question.</span></label>
+        </div>
+        <div class="radio-opt" style="align-items:flex-start;">
+          <input type="radio" name="testConfigMode" value="test" id="modeTest" style="margin-top:3px;">
+          <label for="modeTest"><b>Test Mode</b><br><span class="empty-note" style="padding:2px 0 0;">Simulates a real exam &mdash; no Check/Show Answer until you submit.</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">2&nbsp;&middot;&nbsp; Choose Topics</div>
+      <div id="topicTree"></div>
+    </div>
+
+    <div class="card grid2">
+      <div>
+        <div class="section-title">3&nbsp;&middot;&nbsp; Question Count &amp; Shuffle</div>
+        <div style="margin-bottom:10px;">
+          <label class="chk" style="margin-bottom:8px;">Number of questions
+            <input type="number" id="qCountInput" min="1" value="20" style="width:90px;margin-left:auto;">
+          </label>
+          <button class="btn btn-sm" onclick="useMaxCount()">Use all selected</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="shuffleQ" checked> Shuffle question order</label><br><br>
+        <label class="chk"><input type="checkbox" id="shuffleO"> Shuffle option order (A/B/C/D)</label>
+      </div>
+      <div>
+        <div class="section-title">4&nbsp;&middot;&nbsp; Timer</div>
+        <label class="chk"><input type="checkbox" id="timerEnabled" checked> Total countdown timer</label>
+        <div style="margin:10px 0;">
+          <input type="number" id="timerMinutes" min="1" value="30" style="width:90px;"> minutes
+          <button class="btn btn-sm" onclick="autoSuggestTimer()" style="margin-left:6px;">Auto-suggest</button>
+        </div>
+        <div class="empty-note" style="padding:0;">A live per-question stopwatch always runs alongside the total timer.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">5&nbsp;&middot;&nbsp; Marking Scheme</div>
+      <div class="grid2">
+        <div>
+          <div class="radio-opt"><input type="radio" name="markMode" value="db" id="markModeDb" checked>
+            <label for="markModeDb">Use each question's own marks (from database)</label></div>
+          <div class="radio-opt"><input type="radio" name="markMode" value="flat" id="markModeFlat">
+            <label for="markModeFlat">Same marks for every question:</label>
+            <input type="number" class="mini" id="flatMarksInput" value="4"></div>
+        </div>
+        <div>
+          <div class="radio-opt"><input type="radio" name="negMode" value="none" id="negNone">
+            <label for="negNone">No negative marking</label></div>
+          <div class="radio-opt"><input type="radio" name="negMode" value="flat" id="negFlat" checked>
+            <label for="negFlat">Flat negative per wrong answer:</label>
+            <input type="number" class="mini" id="negFlatInput" value="1"></div>
+          <div class="radio-opt"><input type="radio" name="negMode" value="diff" id="negDiff">
+            <label for="negDiff">By difficulty &mdash;</label>
+            <span class="diffneg-item">Easy <input type="number" class="mini" id="negEasyInput" value="1"></span>
+            <span class="diffneg-item">Med <input type="number" class="mini" id="negMedInput" value="2"></span>
+            <span class="diffneg-item">Hard <input type="number" class="mini" id="negHardInput" value="3"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-start">
+      <button class="btn btn-primary" id="startTestBtn" style="padding:13px 30px;font-size:15px;" onclick="startTest()">Start Test &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 2 : TEST ============ -->
+<section class="page" id="page-test">
+  <div class="test-top">
+    <div class="icon-btn" id="backBtn" onclick="exitTest()" title="Back to previous page">&larr;</div>
+    <h2 id="testTitle">Practice Test</h2>
+    <span class="tag" id="testTag">PRACTICE</span>
+    <div class="spacer"></div>
+    <div class="timer-box" id="totalTimerBox">&#9200; --:--</div>
+    <div class="icon-row">
+      <div class="icon-btn" id="qstripToggleBtn" onclick="toggleQstrip()" title="Show/hide question strip">&#9776;</div>
+      <div class="icon-btn" id="panelToggleBtn" onclick="toggleSidePanel()" title="Show/hide status &amp; palette panel">&#128203;</div>
+      <div class="icon-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light / dark mode">&#9788;</div>
+    </div>
+    <button class="btn btn-red btn-sm" onclick="confirmSubmit()">Submit Test</button>
+  </div>
+  <div class="qstrip-wrap" id="qstrip">
+    <button class="qstrip-arrow" onclick="scrollQstrip(-1)" title="Scroll left">&lsaquo;</button>
+    <div class="qstrip-track" id="qstripTrack"></div>
+    <button class="qstrip-arrow" onclick="scrollQstrip(1)" title="Scroll right">&rsaquo;</button>
+  </div>
+
+  <div class="test-body" id="testBody">
+    <div class="test-main">
+      <div class="qcard" id="qcard"></div>
+    </div>
+    <div class="test-side" id="testSide">
+      <div class="section-title">Status</div>
+      <div class="legend" id="legend"></div>
+      <div class="section-title">Question Palette</div>
+      <div id="paletteWrap"></div>
+    </div>
+  </div>
+  <div class="side-backdrop" id="sideBackdrop" onclick="closeMobilePanel()"></div>
+</section>
+
+<!-- ============ PAGE 3 : SUMMARY ============ -->
+<section class="page" id="page-summary">
+  <div class="res-wrap">
+    <h2 style="color:#fff;">Subject-wise Summary</h2>
+    <p class="empty-note" style="padding:0;">Here's how you performed across each topic.</p>
+    <div class="card">
+      <table class="sw" id="summaryTable"></table>
+    </div>
+    <div class="footer-actions">
+      <button class="btn btn-primary" onclick="showPage('page-score')">View Detailed Score &amp; Review &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 4 : SCORE ============ -->
+<section class="page" id="page-score">
+  <div class="res-wrap">
+    <h2 style="color:#fff;">Final Score</h2>
+    <div class="card">
+      <div class="score-hero">
+        <div class="donut-wrap">
+          <svg width="170" height="170" viewBox="0 0 170 170">
+            <circle cx="85" cy="85" r="72" fill="none" stroke="#1e2a44" stroke-width="16"/>
+            <circle id="scoreArc" cx="85" cy="85" r="72" fill="none" stroke="#3b7bf6" stroke-width="16"
+              stroke-linecap="round" transform="rotate(-90 85 85)"/>
+          </svg>
+          <div class="center"><div class="big" id="scoreBig">0</div><div class="small" id="scoreSmall">/ 0 marks</div></div>
+        </div>
+        <div class="stat-grid" id="scoreStatGrid"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Question-by-Question Review</div>
+      <div id="reviewList"></div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn btn-primary" onclick="downloadReport()">&#11015; Download Report (.md)</button>
+      <button class="btn" onclick="retakeSame()">&#8635; Retake Same Config</button>
+      <button class="btn" onclick="goLanding()">&#8962; Back to Home</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT QUESTION MODAL ============ -->
+<div class="modal-backdrop" id="reportModalBackdrop" onclick="if(event.target===this) closeReportModal()">
+  <div class="report-modal" id="reportModal"></div>
+</div>
+
+<script>
+/* =====================================================================
+   STORAGE KEYS & STATE
+===================================================================== */
+const LS_BANKS = 'cbt_banks_v1';
+const LS_HISTORY = 'cbt_history_v1';
+const LS_ACTIVE = 'cbt_active_v1';
+const LS_THEME = 'cbt_theme_v1';
+const LS_UIPREFS = 'cbt_uiprefs_v1';
+const LS_REPORTS = 'cbt_reports_v1';
+
+let STATE = {
+  banks: {},
+  history: [],
+  currentBankName: null,
+  currentBankQuestions: [],
+  attempt: null,
+  timerHandle: null,
+  qTimerHandle: null,
+  theme: 'dark',
+  uiPrefs: { qstripOpen: true, sideOpen: true },
+  mobilePanelOpen: false,
+  topicOrder: [],
+  reports: []
+};
+
+function lsGet(key, fallback){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ toast('Storage error: ' + e.message); }
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+function formatTime(sec){
+  sec = Math.max(0, Math.round(sec));
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+  const pad = n => String(n).padStart(2,'0');
+  return h>0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+}
+
+/* =====================================================================
+   MD PARSER  (mirrors the Python parser used for the PDF)
+===================================================================== */
+const FIELD_LABELS = ["QID:","Question No:","Question Type:","Topic:","Difficulty:","Suggested Exam:",
+  "Marks:","Negative Marks:","Formatting:","Question:","Options:","Correct Answer:","Solution:"];
+
+function parseMD(text){
+  const lines = text.split(/\r?\n/);
+  const records = [];
+  let cur = null, curPart = null, curSection = null, curLabel = null, buf = [];
+
+  function flush(){
+    if(cur && curLabel){ cur[curLabel] = buf.join('\n').trim(); }
+    buf = [];
+  }
+  for(const raw of lines){
+    const s = raw.trim();
+    if(s.startsWith('# PART')){ curPart = s.replace(/^#+\s*/,''); continue; }
+    if(s.startsWith('## Section')){ curSection = s.replace(/^#+\s*/,''); continue; }
+    if(FIELD_LABELS.includes(s)){
+      flush();
+      if(s === 'QID:'){
+        if(cur) records.push(cur);
+        cur = { part: curPart, section: curSection };
+      }
+      curLabel = s; buf = [];
+      continue;
+    }
+    if(s.startsWith('---')) continue;
+    buf.push(raw);
+  }
+  flush();
+  if(cur) records.push(cur);
+  return records;
+}
+
+function parseOptions(raw){
+  if(!raw) return [];
+  return raw.split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
+    const m = l.match(/^([A-D])\.\s*(.*)$/);
+    return m ? {letter:m[1], text:m[2]} : {letter:'?', text:l};
+  });
+}
+function parseCorrectLetter(raw){
+  if(!raw) return null;
+  const m = raw.match(/([A-D])\b/);
+  return m ? m[1] : null;
+}
+
+/* Convert a raw MD math string into safe HTML with proper <sup>/<sub> */
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function convertMath(raw){
+  if(raw == null) return '';
+  let t = escapeHtml(String(raw));
+  t = t.replace(/(?<![\w.])([\u2212-])?(\d+|\u03c0)\/(\d+|\u03c0)(?![\w.\d])/g,
+    (m,sign,num,den)=> `${sign||''}<sup>${num}</sup>&frasl;<sub>${den}</sub>`);
+  t = t.replace(/\^\(([^)]+)\)/g, (m,g)=>`<sup>${g}</sup>`);
+  t = t.replace(/\^([A-Za-z0-9]+)/g, (m,g)=>`<sup>${g}</sup>`);
+  const supMap = {'\u2070':'0','\u00b9':'1','\u00b2':'2','\u00b3':'3','\u2074':'4','\u2075':'5','\u2076':'6',
+    '\u2077':'7','\u2078':'8','\u2079':'9','\u207b':'\u2212','\u207a':'+','\u02e3':'x','\u207f':'n'};
+  t = t.replace(/[\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b\u207a\u02e3\u207f]+/g,
+    m => '<sup>' + [...m].map(c=>supMap[c]||c).join('') + '</sup>');
+  const subMap = {'\u2080':'0','\u2081':'1','\u2082':'2','\u2083':'3','\u2084':'4','\u2085':'5','\u2086':'6',
+    '\u2087':'7','\u2088':'8','\u2089':'9'};
+  t = t.replace(/[\u2080-\u2089]+/g, m => '<sub>' + [...m].map(c=>subMap[c]||c).join('') + '</sub>');
+  t = t.replace(/\n/g, '<br>');
+  return t;
+}
+
+/* Filter to only auto-gradable questions: MCQ (with options+answer) or Numeric (answer, no options) */
+function extractUsableQuestions(records){
+  const out = [];
+  for(const r of records){
+    const type = (r['Question Type:'] || '').trim();
+    const hasOptions = !!(r['Options:'] && r['Options:'].trim());
+    const correctRaw = r['Correct Answer:'];
+    const hasAnswer = !!(correctRaw && correctRaw.trim() && !/to be filled/i.test(correctRaw));
+    if(!hasAnswer) continue;
+    const kind = hasOptions ? 'mcq' : 'numeric';
+    if(kind === 'mcq' && type !== 'MCQ') continue;
+    const partName = (r.part || '').replace(/^PART\s*\d+\s*[\u2014-]\s*/,'').trim();
+    out.push({
+      qid: r['QID:'],
+      subject: partName || 'General',
+      topic: r['Topic:'] || '',
+      difficulty: r['Difficulty:'] || 'Medium',
+      marks: parseFloat(r['Marks:']) || 1,
+      negMarksDb: parseFloat(r['Negative Marks:']) || 0,
+      question: r['Question:'] || '',
+      kind: kind,
+      options: kind === 'mcq' ? parseOptions(r['Options:']) : [],
+      correctLetter: kind === 'mcq' ? parseCorrectLetter(correctRaw) : null,
+      correctNumeric: kind === 'numeric' ? (correctRaw||'').trim() : null,
+      solution: r['Solution:'] || ''
+    });
+  }
+  return out;
+}
+
+/* =====================================================================
+   PAGE NAVIGATION
+===================================================================== */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function goLanding(){
+  stopTimers();
+  renderLanding();
+  showPage('page-landing');
+}
+function exitTest(){
+  if(confirm('Leave the test? Your progress is saved and you can resume it later from the home page.')){
+    saveActive();
+    stopTimers();
+    goLanding();
+  }
+}
+
+/* ---- theme (light / dark) ---- */
+function applyTheme(){
+  document.body.classList.toggle('light-theme', STATE.theme === 'light');
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.innerHTML = STATE.theme === 'light' ? '&#127769;' : '&#9788;';
+}
+function toggleTheme(){
+  STATE.theme = STATE.theme === 'light' ? 'dark' : 'light';
+  lsSet(LS_THEME, STATE.theme);
+  applyTheme();
+}
+
+/* ---- collapsible qstrip / side panel (test page only) ---- */
+function isMobileLayout(){ return window.innerWidth <= 1050; }
+function applyUiPrefs(){
+  const qs = document.getElementById('qstrip');
+  const side = document.getElementById('testSide');
+  const body = document.getElementById('testBody');
+  const backdrop = document.getElementById('sideBackdrop');
+  const qBtn = document.getElementById('qstripToggleBtn');
+  const pBtn = document.getElementById('panelToggleBtn');
+  if(!qs || !side || !body) return;
+  qs.classList.toggle('hidden', !STATE.uiPrefs.qstripOpen);
+  if(qBtn) qBtn.classList.toggle('active', STATE.uiPrefs.qstripOpen);
+
+  if(isMobileLayout()){
+    side.classList.remove('hidden');
+    body.classList.remove('wide');
+    side.classList.toggle('drawer-open', STATE.mobilePanelOpen);
+    if(backdrop) backdrop.classList.toggle('show', STATE.mobilePanelOpen);
+    if(pBtn) pBtn.classList.toggle('active', STATE.mobilePanelOpen);
+  } else {
+    side.classList.remove('drawer-open');
+    if(backdrop) backdrop.classList.remove('show');
+    side.classList.toggle('hidden', !STATE.uiPrefs.sideOpen);
+    body.classList.toggle('wide', !STATE.uiPrefs.sideOpen);
+    if(pBtn) pBtn.classList.toggle('active', STATE.uiPrefs.sideOpen);
+  }
+}
+function toggleQstrip(){
+  STATE.uiPrefs.qstripOpen = !STATE.uiPrefs.qstripOpen;
+  lsSet(LS_UIPREFS, STATE.uiPrefs);
+  applyUiPrefs();
+}
+function toggleSidePanel(){
+  if(isMobileLayout()){
+    STATE.mobilePanelOpen = !STATE.mobilePanelOpen;
+  } else {
+    STATE.uiPrefs.sideOpen = !STATE.uiPrefs.sideOpen;
+    lsSet(LS_UIPREFS, STATE.uiPrefs);
+  }
+  applyUiPrefs();
+}
+function closeMobilePanel(){
+  STATE.mobilePanelOpen = false;
+  applyUiPrefs();
+}
+window.addEventListener('resize', ()=>{ if(STATE.attempt) applyUiPrefs(); });
+
+/* =====================================================================
+   LANDING PAGE
+===================================================================== */
+function init(){
+  STATE.banks = lsGet(LS_BANKS, {});
+  STATE.history = lsGet(LS_HISTORY, []);
+  STATE.theme = lsGet(LS_THEME, 'dark');
+  STATE.uiPrefs = lsGet(LS_UIPREFS, { qstripOpen: true, sideOpen: true });
+  STATE.reports = lsGet(LS_REPORTS, []);
+  applyTheme();
+  const active = lsGet(LS_ACTIVE, null);
+  renderLanding();
+
+  document.getElementById('fileInput').addEventListener('change', e=>{
+    if(e.target.files[0]) handleFile(e.target.files[0]);
+  });
+  const drop = document.getElementById('fileDrop');
+  drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave', ()=> drop.classList.remove('drag'));
+  drop.addEventListener('drop', e=>{
+    e.preventDefault(); drop.classList.remove('drag');
+    if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  document.getElementById('saveBankBtn').addEventListener('click', saveParsedBank);
+
+  if(active && active.questions && active.questions.length){
+    toast('Resuming your in-progress test&hellip;');
+    STATE.attempt = active;
+    STATE.currentBankName = active.bankName;
+    STATE.currentBankQuestions = (STATE.banks[active.bankName] || {}).questions || [];
+    renderTestPage();
+    showPage('page-test');
+  }
+}
+
+let _pendingParsed = null;
+let _pendingRaw = null;
+function handleFile(file){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const text = e.target.result;
+    const records = parseMD(text);
+    const usable = extractUsableQuestions(records);
+    if(usable.length === 0){
+      document.getElementById('parseSummary').innerHTML =
+        '<span style="color:#ff9494;">No auto-gradable (MCQ / numeric) questions found in this file.</span>';
+      return;
+    }
+    _pendingParsed = usable;
+    _pendingRaw = text;
+    const bySubject = {};
+    usable.forEach(q=>{ bySubject[q.subject] = (bySubject[q.subject]||0)+1; });
+    const parts = Object.entries(bySubject).map(([k,v])=>`${v} in <b>${k}</b>`).join(', ');
+    document.getElementById('parseSummary').innerHTML =
+      `&#9989; Parsed <b>${usable.length}</b> usable questions &mdash; ${parts}.`;
+    document.getElementById('uploadRow').style.display = 'flex';
+    const guess = file.name.replace(/\.(md|txt)$/i,'');
+    document.getElementById('bankNameInput').value = guess;
+  };
+  reader.readAsText(file);
+}
+function saveParsedBank(){
+  const name = document.getElementById('bankNameInput').value.trim();
+  if(!name){ toast('Please enter a name for this bank'); return; }
+  if(!_pendingParsed){ toast('Please choose a file first'); return; }
+  STATE.banks[name] = { savedAt: Date.now(), count: _pendingParsed.length, questions: _pendingParsed, raw: _pendingRaw || '' };
+  lsSet(LS_BANKS, STATE.banks);
+  toast(`Saved "${name}" to this device`);
+  openConfigFor(name);
+}
+function renderLanding(){
+  const list = document.getElementById('savedBanksList');
+  const names = Object.keys(STATE.banks);
+  if(names.length === 0){
+    list.innerHTML = '<div class="empty-note">No banks saved yet &mdash; upload one above.</div>';
+  } else {
+    list.innerHTML = names.map(n=>{
+      const b = STATE.banks[n];
+      const d = new Date(b.savedAt).toLocaleDateString();
+      return `<div class="bank-row">
+        <div><div class="name">${escapeHtml(n)}</div><div class="meta">${b.count} questions &middot; saved ${d}</div></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-primary" onclick="openConfigFor('${escapeHtml(n).replace(/'/g,"\\'")}')">Configure Test</button>
+          <button class="btn btn-sm" onclick="deleteBank('${escapeHtml(n).replace(/'/g,"\\'")}')">Delete</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const hist = document.getElementById('historyList');
+  if(STATE.history.length === 0){
+    hist.innerHTML = '<div class="empty-note">No attempts yet. Your scores will appear here after you finish a test.</div>';
+  } else {
+    hist.innerHTML = STATE.history.slice().reverse().map(a=>{
+      const d = new Date(a.finishedAt).toLocaleString();
+      return `<div class="hist-row" onclick="viewHistoryAttempt('${a.id}')">
+        <div><div style="font-weight:700;">${escapeHtml(a.bankName)}</div>
+          <div class="meta">${d} &middot; ${a.questions.length} questions</div></div>
+        <div class="hist-score">${a.score.obtained} / ${a.score.max}</div>
+      </div>`;
+    }).join('');
+  }
+}
+function deleteBank(name){
+  if(!confirm(`Delete saved bank "${name}"?`)) return;
+  delete STATE.banks[name];
+  lsSet(LS_BANKS, STATE.banks);
+  renderLanding();
+}
+function viewHistoryAttempt(id){
+  const a = STATE.history.find(x=>x.id===id);
+  if(!a) return;
+  STATE.attempt = a;
+  STATE.currentBankQuestions = (STATE.banks[a.bankName]||{}).questions || [];
+  renderSummaryPage();
+  renderScorePage();
+  showPage('page-score');
+}
+
+/* =====================================================================
+   CONFIG PAGE
+===================================================================== */
+function openConfigFor(name){
+  STATE.currentBankName = name;
+  STATE.currentBankQuestions = STATE.banks[name].questions;
+  renderConfigPage();
+  showPage('page-config');
+}
+function renderConfigPage(){
+  const qs = STATE.currentBankQuestions;
+  document.getElementById('cfgBankLabel').textContent =
+    `${STATE.currentBankName} \u2014 ${qs.length} auto-gradable questions available`;
+
+  const bySubjTopic = {};
+  qs.forEach(q=>{
+    bySubjTopic[q.subject] = bySubjTopic[q.subject] || {};
+    bySubjTopic[q.subject][q.topic] = (bySubjTopic[q.subject][q.topic]||0) + 1;
+  });
+  const tree = document.getElementById('topicTree');
+  tree.innerHTML = Object.entries(bySubjTopic).map(([subj, topics], si)=>{
+    const total = Object.values(topics).reduce((a,b)=>a+b,0);
+    const rows = Object.entries(topics).map(([topic,count], ti)=>`
+      <div class="topic-row">
+        <label class="chk"><input type="checkbox" class="topic-chk" data-subject="${escapeHtml(subj)}" data-topic="${escapeHtml(topic)}" checked>
+          ${escapeHtml(topic)}</label>
+        <span class="count-badge">${count} q</span>
+        <span class="order-label">Order</span>
+        <select class="topic-order-sel" data-subject="${escapeHtml(subj)}" data-topic="${escapeHtml(topic)}" onchange="onTopicOrderChange(this)"></select>
+      </div>`).join('');
+    return `<div class="topic-group">
+      <div class="topic-group-head">
+        <label class="chk"><input type="checkbox" class="subject-chk" data-subject="${escapeHtml(subj)}" checked onclick="toggleSubject(this)"> ${escapeHtml(subj)}</label>
+        <span class="count-badge">${total} q</span>
+      </div>
+      <div class="topic-group-body">${rows}</div>
+    </div>`;
+  }).join('');
+  tree.querySelectorAll('.topic-chk').forEach(cb=>cb.addEventListener('change', refreshCfgStrip));
+  ensureTopicOrderInit();
+  refreshCfgStrip();
+}
+function toggleSubject(cb){
+  const subj = cb.dataset.subject;
+  document.querySelectorAll(`.topic-chk[data-subject="${CSS.escape(subj)}"]`).forEach(t=>t.checked = cb.checked);
+  refreshCfgStrip();
+}
+function getSelectedQuestions(){
+  const checked = new Set();
+  document.querySelectorAll('.topic-chk:checked').forEach(cb=> checked.add(cb.dataset.subject+'|||'+cb.dataset.topic));
+  return STATE.currentBankQuestions.filter(q=> checked.has(q.subject+'|||'+q.topic));
+}
+function refreshCfgStrip(){
+  const sel = getSelectedQuestions();
+  const strip = document.getElementById('cfgStatStrip');
+  const byDiff = {Easy:0,Medium:0,Hard:0};
+  sel.forEach(q=> byDiff[q.difficulty] = (byDiff[q.difficulty]||0)+1);
+  strip.innerHTML = `
+    <div class="stat-chip"><div class="n">${sel.length}</div><div class="l">Selected</div></div>
+    <div class="stat-chip"><div class="n">${byDiff.Easy}</div><div class="l">Easy</div></div>
+    <div class="stat-chip"><div class="n">${byDiff.Medium}</div><div class="l">Medium</div></div>
+    <div class="stat-chip"><div class="n">${byDiff.Hard}</div><div class="l">Hard</div></div>`;
+  const countInput = document.getElementById('qCountInput');
+  if(parseInt(countInput.value,10) > sel.length) countInput.value = sel.length;
+  countInput.max = sel.length;
+  renderTopicOrderSelects();
+}
+
+/* ---- Topic ordering (order in which topic-blocks appear in the generated test) ---- */
+function topicKey(subj, topic){ return subj + '|||' + topic; }
+function ensureTopicOrderInit(){
+  const allKeys = [];
+  document.querySelectorAll('.topic-chk').forEach(cb=> allKeys.push(topicKey(cb.dataset.subject, cb.dataset.topic)));
+  if(!STATE.topicOrder || !STATE.topicOrder.length){
+    STATE.topicOrder = allKeys.slice();
+  } else {
+    const allSet = new Set(allKeys);
+    STATE.topicOrder = STATE.topicOrder.filter(k=> allSet.has(k));
+    const known = new Set(STATE.topicOrder);
+    allKeys.forEach(k=>{ if(!known.has(k)) STATE.topicOrder.push(k); });
+  }
+}
+function getCheckedKeysInOrder(){
+  const checked = new Set();
+  document.querySelectorAll('.topic-chk:checked').forEach(cb=> checked.add(topicKey(cb.dataset.subject, cb.dataset.topic)));
+  return (STATE.topicOrder||[]).filter(k=> checked.has(k));
+}
+function renderTopicOrderSelects(){
+  const activeOrdered = getCheckedKeysInOrder();
+  const n = activeOrdered.length;
+  document.querySelectorAll('.topic-order-sel').forEach(sel=>{
+    const key = topicKey(sel.dataset.subject, sel.dataset.topic);
+    const cb = document.querySelector(`.topic-chk[data-subject="${CSS.escape(sel.dataset.subject)}"][data-topic="${CSS.escape(sel.dataset.topic)}"]`);
+    if(!cb || !cb.checked){
+      sel.innerHTML = '<option>&mdash;</option>';
+      sel.disabled = true;
+      return;
+    }
+    sel.disabled = false;
+    const pos = activeOrdered.indexOf(key) + 1;
+    sel.innerHTML = Array.from({length:n}, (_,i)=>`<option value="${i+1}" ${i+1===pos?'selected':''}>${i+1}</option>`).join('');
+  });
+}
+function onTopicOrderChange(sel){
+  const key = topicKey(sel.dataset.subject, sel.dataset.topic);
+  const newPos = parseInt(sel.value,10);
+  let activeOrdered = getCheckedKeysInOrder();
+  const oldIdx = activeOrdered.indexOf(key);
+  if(oldIdx === -1) return;
+  activeOrdered.splice(oldIdx,1);
+  activeOrdered.splice(newPos-1,0,key);
+  const inactive = (STATE.topicOrder||[]).filter(k=> !activeOrdered.includes(k));
+  STATE.topicOrder = activeOrdered.concat(inactive);
+  renderTopicOrderSelects();
+}
+function useMaxCount(){
+  document.getElementById('qCountInput').value = getSelectedQuestions().length;
+}
+function autoSuggestTimer(){
+  const n = parseInt(document.getElementById('qCountInput').value,10) || getSelectedQuestions().length;
+  document.getElementById('timerMinutes').value = Math.max(5, Math.round(n * 1.2));
+}
+
+function startTest(){
+  const selected = getSelectedQuestions();
+  const count = Math.min(parseInt(document.getElementById('qCountInput').value,10) || 0, selected.length);
+  if(count < 1){ toast('Select at least one topic / question'); return; }
+
+  let pool = selected.slice();
+  const orderedKeys = getCheckedKeysInOrder();
+  const orderIndex = {};
+  orderedKeys.forEach((k,i)=> orderIndex[k]=i);
+  pool.sort((a,b)=> (orderIndex[topicKey(a.subject,a.topic)] ?? 999999) - (orderIndex[topicKey(b.subject,b.topic)] ?? 999999));
+  if(document.getElementById('shuffleQ').checked) shuffleArr(pool);
+  pool = pool.slice(0, count);
+
+  const mode = document.querySelector('input[name=testConfigMode]:checked').value;
+  const shuffleO = document.getElementById('shuffleO').checked;
+  const markMode = document.querySelector('input[name=markMode]:checked').value;
+  const flatMarks = parseFloat(document.getElementById('flatMarksInput').value) || 4;
+  const negMode = document.querySelector('input[name=negMode]:checked').value;
+  const negFlat = parseFloat(document.getElementById('negFlatInput').value) || 0;
+  const negByDiff = {
+    Easy: parseFloat(document.getElementById('negEasyInput').value) || 0,
+    Medium: parseFloat(document.getElementById('negMedInput').value) || 0,
+    Hard: parseFloat(document.getElementById('negHardInput').value) || 0
+  };
+  const timerEnabled = document.getElementById('timerEnabled').checked;
+  const timerMinutes = parseFloat(document.getElementById('timerMinutes').value) || 30;
+
+  const questions = pool.map(q=>{
+    let opts = q.options.map(o=>({...o}));
+    if(shuffleO && opts.length) shuffleArr(opts);
+    return {...q, options: opts};
+  });
+
+  const config = { mode, markMode, flatMarks, negMode, negFlat, negByDiff, timerEnabled, timerMinutes, shuffleO, shuffleQ: document.getElementById('shuffleQ').checked };
+
+  const responses = {};
+  questions.forEach(q=>{
+    responses[q.qid] = { status:'notseen', selected:null, numericInput:'', checked:false, review:false,
+      timeSpentSec:0, firstSeenAt:null, lastSeenAt:null, answeredAt:null };
+  });
+
+  STATE.attempt = {
+    id: uid(),
+    bankName: STATE.currentBankName,
+    config,
+    questions,
+    responses,
+    currentIndex: 0,
+    startedAt: Date.now(),
+    finishedAt: null,
+    totalSecondsRemaining: timerEnabled ? Math.round(timerMinutes*60) : null,
+    score: null
+  };
+  lsSet(LS_ACTIVE, STATE.attempt);
+  renderTestPage();
+  showPage('page-test');
+}
+function shuffleArr(arr){
+  for(let i=arr.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+}
+
+/* =====================================================================
+   TEST PAGE
+===================================================================== */
+function questionMarks(q, cfg){
+  const pos = cfg.markMode === 'flat' ? cfg.flatMarks : q.marks;
+  let neg = 0;
+  if(cfg.negMode === 'flat') neg = cfg.negFlat;
+  else if(cfg.negMode === 'diff') neg = cfg.negByDiff[q.difficulty] || 0;
+  return {pos, neg};
+}
+function saveActive(){ lsSet(LS_ACTIVE, STATE.attempt); }
+
+function renderTestPage(){
+  const a = STATE.attempt;
+  const mode = a.config.mode || 'practice';
+  document.getElementById('testTitle').textContent = a.bankName;
+  const tagEl = document.getElementById('testTag');
+  tagEl.textContent = mode === 'test' ? 'TEST' : 'PRACTICE';
+  tagEl.classList.toggle('mode-test', mode === 'test');
+
+  applyTheme();
+  applyUiPrefs();
+  renderQStrip();
+  renderPalette();
+  renderLegend();
+  renderQuestion(a.currentIndex);
+  startTimers();
+}
+function renderQStrip(){
+  const a = STATE.attempt;
+  const strip = document.getElementById('qstripTrack');
+  strip.innerHTML = a.questions.map((q,i)=>{
+    const r = a.responses[q.qid];
+    const cls = statusClass(r);
+    return `<div class="qn ${cls} ${i===a.currentIndex?'active':''}" onclick="goTo(${i})">${i+1}</div>`;
+  }).join('');
+  const activeEl = strip.querySelector('.qn.active');
+  if(activeEl) activeEl.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+function scrollQstrip(dir){
+  const track = document.getElementById('qstripTrack');
+  if(track) track.scrollBy({left: dir * 220, behavior: 'smooth'});
+}
+/* Standard 5-state exam palette status, independent of correctness (correctness is only
+   revealed via Check/Show Answer in practice mode, or after submission). */
+function paletteState(r){
+  const answered = !!(r.selected != null && r.selected !== '');
+  const seen = r.status !== 'notseen';
+  if(!seen) return 'notvisited';
+  if(r.review && answered) return 'answeredmarked';
+  if(r.review) return 'marked';
+  if(answered) return 'answered';
+  return 'visited';
+}
+function statusClass(r){
+  const st = paletteState(r);
+  return st === 'notvisited' ? '' : 'status-' + st;
+}
+function renderPalette(){
+  const a = STATE.attempt;
+  const bySubj = {};
+  a.questions.forEach((q,i)=>{ (bySubj[q.subject] = bySubj[q.subject]||[]).push(i); });
+  const wrap = document.getElementById('paletteWrap');
+  wrap.innerHTML = Object.entries(bySubj).map(([subj, idxs])=>`
+    <div class="subject-block">
+      <h4>${escapeHtml(subj)} &middot; ${idxs.length}</h4>
+      <div class="palette-grid">
+        ${idxs.map(i=>{
+          const r = a.responses[a.questions[i].qid];
+          return `<div class="pn ${statusClass(r)} ${i===a.currentIndex?'active':''}"
+            onclick="goTo(${i})">${i+1}</div>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+}
+function renderLegend(){
+  const a = STATE.attempt;
+  const counts = {notvisited:0, visited:0, answered:0, marked:0, answeredmarked:0};
+  Object.values(a.responses).forEach(r=> counts[paletteState(r)]++);
+  document.getElementById('legend').innerHTML = `
+    <div class="li"><span class="dot dot-green"></span>Attempted<span class="n">${counts.answered}</span></div>
+    <div class="li"><span class="dot dot-purple-dot"></span>Attempted &amp; Marked<span class="n">${counts.answeredmarked}</span></div>
+    <div class="li"><span class="dot dot-purple"></span>Marked<span class="n">${counts.marked}</span></div>
+    <div class="li"><span class="dot dot-red"></span>Seen<span class="n">${counts.visited}</span></div>
+    <div class="li"><span class="dot dot-grey"></span>Not Seen<span class="n">${counts.notvisited}</span></div>`;
+}
+
+let _qTickStart = null;
+function renderQuestion(idx){
+  const a = STATE.attempt;
+  commitElapsed();
+  a.currentIndex = idx;
+  const q = a.questions[idx];
+  const r = a.responses[q.qid];
+  if(!r.firstSeenAt) r.firstSeenAt = Date.now();
+  r.lastSeenAt = Date.now();
+  if(r.status === 'notseen') r.status = 'seen';
+  _qTickStart = Date.now();
+
+  const {pos, neg} = questionMarks(q, a.config);
+  const card = document.getElementById('qcard');
+
+  let optHtml = '';
+  if(q.kind === 'mcq'){
+    optHtml = `<div class="opt-list">` + q.options.map(o=>{
+      let cls = 'opt';
+      if(r.checked || r.status==='skipped'){
+        cls += ' locked';
+        if(o.letter === q.correctLetter) cls += ' correct';
+        else if(o.letter === r.selected) cls += ' wrong';
+      } else if(o.letter === r.selected){
+        cls += ' selected';
+      }
+      return `<div class="${cls}" onclick="selectOption('${o.letter}')">
+        <div class="badge">${o.letter}</div><div class="otext">${convertMath(o.text)}</div></div>`;
+    }).join('') + `</div>`;
+  } else {
+    const locked = r.checked || r.status==='skipped';
+    optHtml = `<div class="numeric-input-row">
+      <input type="text" id="numInput" placeholder="Enter numeric answer" value="${r.numericInput||''}"
+        ${locked?'disabled':''} oninput="onNumericInput(this.value)">
+      ${locked ? `<span class="pill ${r.status==='correct'?'pill-green':'pill-red'}">Correct: ${escapeHtml(q.correctNumeric)}</span>` : ''}
+    </div>`;
+  }
+
+  let solutionHtml = '';
+  if(r.checked || r.status==='skipped'){
+    solutionHtml = `<div class="solution-box"><h4>Solution</h4><p>${convertMath(q.solution || 'Not available.')}</p></div>`;
+  }
+
+  const isPractice = (a.config.mode || 'practice') !== 'test';
+  const midActions = isPractice ? `
+      <button class="btn btn-green btn-sm" onclick="checkAnswer()" ${r.checked||r.status==='skipped'?'disabled':''}>Check Answer</button>
+      <button class="btn btn-sm" onclick="clearResponse()" ${r.checked||r.status==='skipped'?'disabled':''}>Clear Response</button>
+      <div class="spacer"></div>
+      <div class="showans-toggle">Show Answer
+        <div class="switch ${r.status==='skipped'?'on':''}" onclick="toggleShowAnswer()"><div class="knob"></div></div>
+      </div>` : `
+      <button class="btn btn-sm" onclick="clearResponse()">Clear Response</button>
+      <div class="spacer"></div>`;
+
+  card.innerHTML = `
+    <div class="qcard-top">
+      <div class="qnum-cell">
+        <div class="qnum-badge">${idx+1}</div>
+        <div class="qtimer" id="qtimerLabel">00:00</div>
+      </div>
+      <div class="marks-tag"><span class="pos">+${pos}</span>${neg>0?`<span class="neg">&minus;${neg}</span>`:''}</div>
+      <span class="diff-tag diff-${q.difficulty}">${q.difficulty}</span>
+      <span class="qtype-tag">${q.kind==='mcq'?'MCQ':'Numerical'}</span>
+      <div class="topic-full">${escapeHtml(q.topic)}</div>
+      <div class="header-actions">
+        <button class="review-star ${r.review?'active':''}" onclick="toggleReview()" title="${r.review?'Unmark review':'Mark for review'}">${r.review?'&#9733;':'&#9734;'}</button>
+        <button class="report-btn" onclick="openReportModal()" title="Report an issue with this question">&#9873;</button>
+      </div>
+    </div>
+    <div class="qtext">${convertMath(q.question)}</div>
+    ${optHtml}
+    ${solutionHtml}
+    <div class="actions-bar">${midActions}</div>
+    <div class="actions-bar">
+      <button class="btn" onclick="goTo(${idx-1})" ${idx===0?'disabled':''}>&larr; Previous</button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(${idx+1})" ${idx===a.questions.length-1?'disabled':''}>Next &rarr;</button>
+    </div>`;
+
+  renderQStrip(); renderPalette(); renderLegend();
+  saveActive();
+}
+function onNumericInput(val){
+  const a = STATE.attempt; const q = a.questions[a.currentIndex]; const r = a.responses[q.qid];
+  r.numericInput = val;
+  r.selected = val;
+  r.status = val.trim() ? 'attempted' : 'seen';
+  r.answeredAt = Date.now();
+  renderQStrip(); renderPalette(); renderLegend(); saveActive();
+}
+function selectOption(letter){
+  const a = STATE.attempt; const q = a.questions[a.currentIndex]; const r = a.responses[q.qid];
+  if(r.checked || r.status==='skipped') return;
+  r.selected = letter;
+  r.status = 'attempted';
+  r.answeredAt = Date.now();
+  renderQuestion(a.currentIndex);
+}
+function checkAnswer(){
+  const a = STATE.attempt; const q = a.questions[a.currentIndex]; const r = a.responses[q.qid];
+  if(r.selected == null || r.selected === ''){ toast('Select or enter an answer first'); return; }
+  let isCorrect;
+  if(q.kind === 'mcq') isCorrect = (r.selected === q.correctLetter);
+  else isCorrect = numericMatches(r.selected, q.correctNumeric);
+  r.checked = true;
+  r.status = isCorrect ? 'correct' : 'wrong';
+  renderQuestion(a.currentIndex);
+}
+function numericMatches(input, correct){
+  const a = parseFloat(input), b = parseFloat(correct);
+  if(!isNaN(a) && !isNaN(b)) return Math.abs(a-b) < 1e-2;
+  return String(input).trim().toLowerCase() === String(correct).trim().toLowerCase();
+}
+function clearResponse(){
+  const a = STATE.attempt; const q = a.questions[a.currentIndex]; const r = a.responses[q.qid];
+  if(r.checked || r.status==='skipped') return;
+  r.selected = null; r.numericInput=''; r.status = 'seen'; r.answeredAt = null;
+  renderQuestion(a.currentIndex);
+}
+function toggleReview(){
+  const a = STATE.attempt; const q = a.questions[a.currentIndex]; const r = a.responses[q.qid];
+  r.review = !r.review;
+  renderQuestion(a.currentIndex);
+}
+
+/* ---------------- REPORT QUESTION MODAL ---------------- */
+const REPORT_CATEGORIES = [
+  {id:'typo', icon:'&#9999;', title:'Typo Error', desc:'If question has error or spelling mistake or misprint etc.'},
+  {id:'answer', icon:'&#10060;', title:'Answer Error', desc:"If question's answer is wrong."},
+  {id:'classification', icon:'&#128218;', title:'Classification Error', desc:'If question in wrong chapter, wrong topic or wrong difficulty level.'},
+  {id:'translation', icon:'&#127760;', title:'Translation Error', desc:"If question's translation is wrong or has error."},
+  {id:'other', icon:'&#9888;', title:'Other Error', desc:"Error which can't be categorized in above those."}
+];
+let REPORT_MODAL = { step:'category', category:null, categoryLabel:null };
+function openReportModal(){
+  REPORT_MODAL = { step:'category', category:null, categoryLabel:null };
+  renderReportModal();
+  document.getElementById('reportModalBackdrop').classList.add('open');
+}
+function closeReportModal(){
+  document.getElementById('reportModalBackdrop').classList.remove('open');
+}
+function pickReportCategory(id, title){
+  REPORT_MODAL.category = id;
+  REPORT_MODAL.categoryLabel = title;
+  REPORT_MODAL.step = 'details';
+  renderReportModal();
+}
+function backReportModal(){
+  REPORT_MODAL.step = 'category';
+  renderReportModal();
+}
+function renderReportModal(){
+  const modal = document.getElementById('reportModal');
+  if(REPORT_MODAL.step === 'category'){
+    modal.innerHTML = `
+      <div class="report-modal-head"><span>&#9873;</span> Report Question</div>
+      <div class="report-modal-body">
+        ${REPORT_CATEGORIES.map(c=>`
+          <div class="report-cat ${REPORT_MODAL.category===c.id?'selected':''}" onclick="pickReportCategory('${c.id}','${c.title}')">
+            <div class="icon">${c.icon}</div>
+            <div class="txt"><b>${c.title}</b><span>${c.desc}</span></div>
+            <div class="chev">&#8250;</div>
+          </div>`).join('')}
+      </div>
+      <div class="report-modal-foot" style="justify-content:flex-start;">
+        <button class="btn" style="border-color:var(--red);color:#ff9494;" onclick="closeReportModal()">&#10005; Cancel</button>
+      </div>`;
+  } else {
+    modal.innerHTML = `
+      <div class="report-modal-head"><span class="back" onclick="backReportModal()">&larr;</span> &#9873; Report Question</div>
+      <div class="report-modal-body">
+        <div class="report-section-label">&#128203; Provide Additional Details</div>
+        <textarea class="report-textarea" id="reportDetails" maxlength="500"
+          placeholder="Please describe the issue in detail. The more information you provide, the better we can help resolve the problem."
+          oninput="updateReportCharCount()"></textarea>
+        <div class="report-charcount" id="reportCharCount">0/500</div>
+        <div class="report-tip">&#128204; <span><b>Tip:</b> Include specific details like what you expected vs. what happened, any error messages, or steps to reproduce the issue.</span></div>
+      </div>
+      <div class="report-modal-foot">
+        <button class="btn" style="border-color:var(--red);color:#ff9494;" onclick="closeReportModal()">&#10005; Cancel</button>
+        <button class="btn btn-primary" onclick="submitReport()">&#10148; Submit Report</button>
+      </div>`;
+  }
+}
+function updateReportCharCount(){
+  const ta = document.getElementById('reportDetails');
+  const el = document.getElementById('reportCharCount');
+  if(ta && el) el.textContent = `${ta.value.length}/500`;
+}
+function submitReport(){
+  const a = STATE.attempt;
+  if(!a){ closeReportModal(); return; }
+  const q = a.questions[a.currentIndex];
+  const ta = document.getElementById('reportDetails');
+  const details = ta ? ta.value.trim() : '';
+  const id = 'ERR-' + Date.now().toString(36).toUpperCase();
+  const report = {
+    id, bankName: a.bankName, qid: q.qid, questionNo: a.currentIndex+1, topic: q.topic,
+    category: REPORT_MODAL.category, categoryLabel: REPORT_MODAL.categoryLabel,
+    details, createdAt: Date.now()
+  };
+  STATE.reports = STATE.reports || [];
+  STATE.reports.push(report);
+  lsSet(LS_REPORTS, STATE.reports);
+  appendReportToBankMd(report);
+  closeReportModal();
+  toast(`Report ${id} submitted — thanks!`);
+}
+function appendReportToBankMd(report){
+  const bank = STATE.banks[report.bankName];
+  if(!bank) return;
+  if(typeof bank.raw !== 'string') bank.raw = '';
+  bank.raw += `\n\n---\n## Error Report [${report.id}]\n` +
+    `QID: ${report.qid}\nQuestion No: ${report.questionNo}\nTopic: ${report.topic}\n` +
+    `Error Type: ${report.categoryLabel}\nReported At: ${new Date(report.createdAt).toLocaleString()}\n` +
+    `Details: ${report.details || '(none provided)'}\n`;
+  lsSet(LS_BANKS, STATE.banks);
+}
+
+function toggleShowAnswer(){
+  const a = STATE.attempt; const q = a.questions[a.currentIndex]; const r = a.responses[q.qid];
+  if(r.checked) return;
+  r.status = (r.status === 'skipped') ? (r.selected ? 'attempted' : 'seen') : 'skipped';
+  renderQuestion(a.currentIndex);
+}
+function goTo(i){
+  const a = STATE.attempt;
+  if(i < 0 || i >= a.questions.length) return;
+  renderQuestion(i);
+}
+function commitElapsed(){
+  if(_qTickStart == null) return;
+  const a = STATE.attempt; if(!a) return;
+  const q = a.questions[a.currentIndex]; if(!q) return;
+  const r = a.responses[q.qid];
+  r.timeSpentSec += (Date.now() - _qTickStart) / 1000;
+  _qTickStart = null;
+}
+
+/* ---- timers ---- */
+function startTimers(){
+  stopTimers();
+  const a = STATE.attempt;
+  updateTotalTimerBox();
+  STATE.timerHandle = setInterval(()=>{
+    if(a.config.timerEnabled){
+      a.totalSecondsRemaining -= 1;
+      if(a.totalSecondsRemaining <= 0){
+        a.totalSecondsRemaining = 0;
+        updateTotalTimerBox();
+        submitTest(true);
+        return;
+      }
+    }
+    updateTotalTimerBox();
+  }, 1000);
+  STATE.qTimerHandle = setInterval(()=>{
+    if(_qTickStart == null) return;
+    const live = STATE.attempt.responses[STATE.attempt.questions[STATE.attempt.currentIndex].qid].timeSpentSec
+      + (Date.now()-_qTickStart)/1000;
+    const lbl = document.getElementById('qtimerLabel');
+    if(lbl) lbl.textContent = formatTime(live);
+  }, 500);
+}
+function stopTimers(){
+  if(STATE.timerHandle) clearInterval(STATE.timerHandle);
+  if(STATE.qTimerHandle) clearInterval(STATE.qTimerHandle);
+  STATE.timerHandle = null; STATE.qTimerHandle = null;
+}
+function updateTotalTimerBox(){
+  const box = document.getElementById('totalTimerBox');
+  const a = STATE.attempt;
+  if(!a.config.timerEnabled){ box.innerHTML = '&#9200; Untimed'; box.classList.remove('low'); return; }
+  box.innerHTML = '&#9200; ' + formatTime(a.totalSecondsRemaining);
+  box.classList.toggle('low', a.totalSecondsRemaining <= 120);
+}
+
+function confirmSubmit(){
+  if(confirm('Submit the test now? You cannot change answers after submitting.')) submitTest(false);
+}
+function submitTest(auto){
+  commitElapsed();
+  stopTimers();
+  const a = STATE.attempt;
+  a.finishedAt = Date.now();
+  a.score = computeScore(a);
+  STATE.history.push(a);
+  lsSet(LS_HISTORY, STATE.history);
+  localStorage.removeItem(LS_ACTIVE);
+  if(auto) toast('Time up! Test auto-submitted.');
+  renderSummaryPage();
+  renderScorePage();
+  showPage('page-summary');
+}
+function computeScore(a){
+  let obtained = 0, max = 0, correct=0, wrong=0, unattempted=0;
+  a.questions.forEach(q=>{
+    const r = a.responses[q.qid];
+    const {pos, neg} = questionMarks(q, a.config);
+    max += pos;
+    let finalStatus = r.status;
+    if(!r.checked && finalStatus !== 'skipped' && (r.selected != null && r.selected !== '')){
+      const isCorrect = q.kind === 'mcq' ? (r.selected === q.correctLetter) : numericMatches(r.selected, q.correctNumeric);
+      finalStatus = isCorrect ? 'correct' : 'wrong';
+      r.status = finalStatus; r.checked = true;
+    }
+    if(finalStatus === 'correct'){ obtained += pos; correct++; }
+    else if(finalStatus === 'wrong'){ obtained -= neg; wrong++; }
+    else { unattempted++; }
+  });
+  return { obtained: Math.round(obtained*100)/100, max, correct, wrong, unattempted,
+    total: a.questions.length, accuracy: (correct+wrong)>0 ? Math.round(correct/(correct+wrong)*1000)/10 : 0 };
+}
+
+/* =====================================================================
+   SUMMARY PAGE
+===================================================================== */
+function renderSummaryPage(){
+  const a = STATE.attempt;
+  const bySubj = {};
+  a.questions.forEach(q=>{
+    const r = a.responses[q.qid];
+    const s = bySubj[q.subject] = bySubj[q.subject] || {attempted:0,correct:0,wrong:0,unattempted:0,obtained:0,max:0,total:0};
+    const {pos, neg} = questionMarks(q, a.config);
+    s.total++; s.max += pos;
+    if(r.status==='correct'){ s.correct++; s.attempted++; s.obtained += pos; }
+    else if(r.status==='wrong'){ s.wrong++; s.attempted++; s.obtained -= neg; }
+    else s.unattempted++;
+  });
+  const rows = Object.entries(bySubj).map(([subj,s])=>{
+    const acc = s.attempted>0 ? Math.round(s.correct/s.attempted*100) : 0;
+    return `<tr>
+      <td><b>${escapeHtml(subj)}</b><div class="empty-note" style="padding:0;">${s.total} questions</div></td>
+      <td>${s.correct}</td><td>${s.wrong}</td><td>${s.unattempted}</td>
+      <td>${Math.round(s.obtained*100)/100} / ${s.max}</td>
+      <td style="width:120px;"><div class="bar-track"><div class="bar-fill" style="width:${acc}%;"></div></div>
+        <div class="empty-note" style="padding:2px 0 0;">${acc}% accuracy</div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('summaryTable').innerHTML = `
+    <tr><th>Topic</th><th>Correct</th><th>Wrong</th><th>Unattempted</th><th>Marks</th><th>Accuracy</th></tr>
+    ${rows}`;
+}
+
+/* =====================================================================
+   SCORE PAGE
+===================================================================== */
+function renderScorePage(){
+  const a = STATE.attempt;
+  const s = a.score;
+  const pct = s.max > 0 ? Math.max(0, Math.min(1, s.obtained / s.max)) : 0;
+  const circ = 2 * Math.PI * 72;
+  const arc = document.getElementById('scoreArc');
+  arc.setAttribute('stroke-dasharray', `${circ}`);
+  arc.setAttribute('stroke-dashoffset', `${circ * (1-pct)}`);
+  arc.setAttribute('stroke', pct >= 0.6 ? '#1fae5c' : pct >= 0.35 ? '#c99a2e' : '#e14b4b');
+  document.getElementById('scoreBig').textContent = s.obtained;
+  document.getElementById('scoreSmall').textContent = `/ ${s.max} marks`;
+
+  const totalTimeSec = (a.finishedAt - a.startedAt)/1000;
+  const allotted = a.config.timerEnabled ? a.config.timerMinutes*60 : null;
+  document.getElementById('scoreStatGrid').innerHTML = `
+    <div class="box"><div class="v">${s.correct}</div><div class="k">Correct</div></div>
+    <div class="box"><div class="v">${s.wrong}</div><div class="k">Wrong</div></div>
+    <div class="box"><div class="v">${s.unattempted}</div><div class="k">Unattempted</div></div>
+    <div class="box"><div class="v">${s.accuracy}%</div><div class="k">Accuracy</div></div>
+    <div class="box"><div class="v">${formatTime(totalTimeSec)}</div><div class="k">Time Taken${allotted?(' / '+formatTime(allotted)):''}</div></div>
+    <div class="box"><div class="v">${formatTime(totalTimeSec/Math.max(1,s.total))}</div><div class="k">Avg / Question</div></div>`;
+
+  document.getElementById('reviewList').innerHTML = a.questions.map((q,i)=>{
+    const r = a.responses[q.qid];
+    const icon = r.status==='correct' ? {c:'#1fae5c',t:'&#10003;'} : r.status==='wrong' ? {c:'#e14b4b',t:'&#10007;'} : {c:'#4c5674',t:'&mdash;'};
+    let bodyOpts = '';
+    if(q.kind === 'mcq'){
+      bodyOpts = q.options.map(o=>{
+        let cls='opt-mini';
+        if(o.letter===q.correctLetter) cls+=' correct';
+        else if(o.letter===r.selected) cls+=' wrong';
+        return `<div class="${cls}"><b>${o.letter}.</b> ${convertMath(o.text)}</div>`;
+      }).join('');
+    } else {
+      bodyOpts = `<div class="opt-mini ${r.status}">Your answer: <b>${escapeHtml(r.selected||'\u2014')}</b> &nbsp;|&nbsp; Correct: <b>${escapeHtml(q.correctNumeric)}</b></div>`;
+    }
+    return `<div class="review-item">
+      <div class="review-head" onclick="this.nextElementSibling.classList.toggle('open')">
+        <div class="st-icon" style="background:${icon.c};">${icon.t}</div>
+        <div class="qn">Q${i+1}. ${escapeHtml(q.topic)}</div>
+        <div class="t">${formatTime(r.timeSpentSec)}</div>
+      </div>
+      <div class="review-body">
+        <div style="margin-bottom:10px;">${convertMath(q.question)}</div>
+        ${bodyOpts}
+        <div class="solution-box"><h4>Solution</h4><p>${convertMath(q.solution||'Not available.')}</p></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* =====================================================================
+   REPORT DOWNLOAD
+===================================================================== */
+function downloadReport(){
+  const a = STATE.attempt; const s = a.score;
+  const lines = [];
+  lines.push(`# CBT Practice Report`);
+  lines.push('');
+  lines.push(`**Bank:** ${a.bankName}`);
+  lines.push(`**Started:** ${new Date(a.startedAt).toLocaleString()}`);
+  lines.push(`**Finished:** ${new Date(a.finishedAt).toLocaleString()}`);
+  lines.push(`**Total Time:** ${formatTime((a.finishedAt-a.startedAt)/1000)}`);
+  lines.push(`**Marking:** ${a.config.markMode==='flat' ? 'Flat '+a.config.flatMarks+' each' : 'Database marks'}; Negative: ${a.config.negMode}`);
+  lines.push('');
+  lines.push(`## Score: ${s.obtained} / ${s.max}  (Accuracy ${s.accuracy}%)`);
+  lines.push(`- Correct: ${s.correct}`);
+  lines.push(`- Wrong: ${s.wrong}`);
+  lines.push(`- Unattempted: ${s.unattempted}`);
+  lines.push('');
+  lines.push(`## Question Log`);
+  a.questions.forEach((q,i)=>{
+    const r = a.responses[q.qid];
+    lines.push(`${i+1}. [${q.qid}] ${q.topic} (${q.difficulty}) - status: ${r.status} - time: ${formatTime(r.timeSpentSec)}`);
+    lines.push(`   Q: ${q.question.replace(/\n/g,' ')}`);
+    if(q.kind==='mcq'){
+      lines.push(`   Your answer: ${r.selected||'-'} | Correct: ${q.correctLetter}`);
+    } else {
+      lines.push(`   Your answer: ${r.selected||'-'} | Correct: ${q.correctNumeric}`);
+    }
+    lines.push(`   Seen at: ${r.firstSeenAt?new Date(r.firstSeenAt).toLocaleTimeString():'-'} | Answered at: ${r.answeredAt?new Date(r.answeredAt).toLocaleTimeString():'-'}`);
+    lines.push('');
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/markdown'});
+  const url = URL.createObjectURL(blob);
+  const fname = `CBT_Report_${a.bankName.replace(/\s+/g,'_')}_${new Date(a.finishedAt).toISOString().slice(0,16).replace(/[:T]/g,'-')}.md`;
+  const link = document.createElement('a');
+  link.href = url; link.download = fname; document.body.appendChild(link); link.click();
+  document.body.removeChild(link); URL.revokeObjectURL(url);
+  toast('Report downloaded to your device');
+}
+
+function retakeSame(){
+  openConfigFor(STATE.attempt.bankName);
+}
+
+init();
+</script>
+</body>
+</html>
