@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CBT Practice Platform</title>
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/theme-light.css">
+<link rel="stylesheet" href="src/styles/landing.css">
+<link rel="stylesheet" href="src/styles/config.css">
+<link rel="stylesheet" href="src/styles/test.css">
+<link rel="stylesheet" href="src/styles/summary.css">
+<link rel="stylesheet" href="src/styles/score.css">
+<link rel="stylesheet" href="src/styles/report-modal.css">
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============ PAGE 0 : LANDING ============ -->
+<section class="page active" id="page-landing">
+  <div class="landing-wrap">
+    <div class="brand">
+      <div class="logo">&#8747;</div>
+      <h1>CBT Practice Platform</h1>
+      <p>Load a question bank, configure your test, and practice like a real exam &mdash; entirely on this device.</p>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Load Question Bank (.md)</div>
+      <label class="file-drop" id="fileDrop">
+        <input type="file" id="fileInput" accept=".md,.txt" hidden>
+        <div class="big">&#128196;</div>
+        <div>Click to choose, or drag &amp; drop your <b>.md</b> question-bank file here</div>
+      </label>
+      <div class="upload-row" id="uploadRow" style="display:none;">
+        <input type="text" id="bankNameInput" placeholder="Save this bank as&hellip; (e.g. Basic Calculus)">
+        <button class="btn btn-primary" id="saveBankBtn">Save &amp; Continue &rarr;</button>
+      </div>
+      <div id="parseSummary" class="empty-note"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Saved Question Banks</div>
+      <div id="savedBanksList"><div class="empty-note">No banks saved yet &mdash; upload one above.</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Past Attempts</div>
+      <div id="historyList"><div class="empty-note">No attempts yet. Your scores will appear here after you finish a test.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 1 : CONFIG ============ -->
+<section class="page" id="page-config">
+  <div class="cfg-wrap">
+    <div class="cfg-header">
+      <div class="back-btn" id="configBackBtn">&larr;</div>
+      <div>
+        <h2 style="margin:0;color:#fff;">Configure Test</h2>
+        <div class="empty-note" id="cfgBankLabel" style="padding:0;"></div>
+      </div>
+    </div>
+
+    <div class="summary-strip" id="cfgStatStrip"></div>
+
+    <div class="card">
+      <div class="section-title">1&nbsp;&middot;&nbsp; Mode</div>
+      <div class="grid2">
+        <div class="radio-opt" style="align-items:flex-start;">
+          <input type="radio" name="testConfigMode" value="practice" id="modePractice" checked style="margin-top:3px;">
+          <label for="modePractice"><b>Practice Mode</b><br><span class="empty-note" style="padding:2px 0 0;">Check Answer &amp; Show Answer available on every question.</span></label>
+        </div>
+        <div class="radio-opt" style="align-items:flex-start;">
+          <input type="radio" name="testConfigMode" value="test" id="modeTest" style="margin-top:3px;">
+          <label for="modeTest"><b>Test Mode</b><br><span class="empty-note" style="padding:2px 0 0;">Simulates a real exam &mdash; no Check/Show Answer until you submit.</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">2&nbsp;&middot;&nbsp; Choose Topics</div>
+      <div id="topicTree"></div>
+    </div>
+
+    <div class="card grid2">
+      <div>
+        <div class="section-title">3&nbsp;&middot;&nbsp; Question Count &amp; Shuffle</div>
+        <div style="margin-bottom:10px;">
+          <label class="chk" style="margin-bottom:8px;">Number of questions
+            <input type="number" id="qCountInput" min="1" value="20" style="width:90px;margin-left:auto;">
+          </label>
+          <button class="btn btn-sm" id="useMaxCountBtn">Use all selected</button>
+        </div>
+        <label class="chk"><input type="checkbox" id="shuffleQ" checked> Shuffle question order</label><br><br>
+        <label class="chk"><input type="checkbox" id="shuffleO"> Shuffle option order (A/B/C/D)</label>
+      </div>
+      <div>
+        <div class="section-title">4&nbsp;&middot;&nbsp; Timer</div>
+        <label class="chk"><input type="checkbox" id="timerEnabled" checked> Total countdown timer</label>
+        <div style="margin:10px 0;">
+          <input type="number" id="timerMinutes" min="1" value="30" style="width:90px;"> minutes
+          <button class="btn btn-sm" id="autoSuggestTimerBtn" style="margin-left:6px;">Auto-suggest</button>
+        </div>
+        <div class="empty-note" style="padding:0;">A live per-question stopwatch always runs alongside the total timer.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">5&nbsp;&middot;&nbsp; Marking Scheme</div>
+      <div class="grid2">
+        <div>
+          <div class="radio-opt"><input type="radio" name="markMode" value="db" id="markModeDb" checked>
+            <label for="markModeDb">Use each question's own marks (from database)</label></div>
+          <div class="radio-opt"><input type="radio" name="markMode" value="flat" id="markModeFlat">
+            <label for="markModeFlat">Same marks for every question:</label>
+            <input type="number" class="mini" id="flatMarksInput" value="4"></div>
+        </div>
+        <div>
+          <div class="radio-opt"><input type="radio" name="negMode" value="none" id="negNone">
+            <label for="negNone">No negative marking</label></div>
+          <div class="radio-opt"><input type="radio" name="negMode" value="flat" id="negFlat" checked>
+            <label for="negFlat">Flat negative per wrong answer:</label>
+            <input type="number" class="mini" id="negFlatInput" value="1"></div>
+          <div class="radio-opt"><input type="radio" name="negMode" value="diff" id="negDiff">
+            <label for="negDiff">By difficulty &mdash;</label>
+            <span class="diffneg-item">Easy <input type="number" class="mini" id="negEasyInput" value="1"></span>
+            <span class="diffneg-item">Med <input type="number" class="mini" id="negMedInput" value="2"></span>
+            <span class="diffneg-item">Hard <input type="number" class="mini" id="negHardInput" value="3"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-start">
+      <button class="btn btn-primary" id="startTestBtn" style="padding:13px 30px;font-size:15px;">Start Test &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 2 : TEST ============ -->
+<section class="page" id="page-test">
+  <div class="test-top">
+    <div class="icon-btn" id="backBtn" title="Back to previous page">&larr;</div>
+    <h2 id="testTitle">Practice Test</h2>
+    <span class="tag" id="testTag">PRACTICE</span>
+    <div class="spacer"></div>
+    <div class="timer-box" id="totalTimerBox">&#9200; --:--</div>
+    <div class="icon-row">
+      <div class="icon-btn" id="qstripToggleBtn" title="Show/hide question strip">&#9776;</div>
+      <div class="icon-btn" id="panelToggleBtn" title="Show/hide status &amp; palette panel">&#128203;</div>
+      <div class="icon-btn" id="themeToggleBtn" title="Toggle light / dark mode">&#9788;</div>
+    </div>
+    <button class="btn btn-red btn-sm" id="submitTestBtn">Submit Test</button>
+  </div>
+  <div class="qstrip-wrap" id="qstrip">
+    <button class="qstrip-arrow" id="qstripLeftArrow" title="Scroll left">&lsaquo;</button>
+    <div class="qstrip-track" id="qstripTrack"></div>
+    <button class="qstrip-arrow" id="qstripRightArrow" title="Scroll right">&rsaquo;</button>
+  </div>
+
+  <div class="test-body" id="testBody">
+    <div class="test-main">
+      <div class="qcard" id="qcard"></div>
+    </div>
+    <div class="test-side" id="testSide">
+      <div class="section-title">Status</div>
+      <div class="legend" id="legend"></div>
+      <div class="section-title">Question Palette</div>
+      <div id="paletteWrap"></div>
+    </div>
+  </div>
+  <div class="side-backdrop" id="sideBackdrop"></div>
+</section>
+
+<!-- ============ PAGE 3 : SUMMARY ============ -->
+<section class="page" id="page-summary">
+  <div class="res-wrap">
+    <h2 style="color:#fff;">Subject-wise Summary</h2>
+    <p class="empty-note" style="padding:0;">Here's how you performed across each topic.</p>
+    <div class="card">
+      <table class="sw" id="summaryTable"></table>
+    </div>
+    <div class="footer-actions">
+      <button class="btn btn-primary" id="goToScoreBtn">View Detailed Score &amp; Review &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PAGE 4 : SCORE ============ -->
+<section class="page" id="page-score">
+  <div class="res-wrap">
+    <h2 style="color:#fff;">Final Score</h2>
+    <div class="card">
+      <div class="score-hero">
+        <div class="donut-wrap">
+          <svg width="170" height="170" viewBox="0 0 170 170">
+            <circle cx="85" cy="85" r="72" fill="none" stroke="#1e2a44" stroke-width="16"/>
+            <circle id="scoreArc" cx="85" cy="85" r="72" fill="none" stroke="#3b7bf6" stroke-width="16"
+              stroke-linecap="round" transform="rotate(-90 85 85)"/>
+          </svg>
+          <div class="center"><div class="big" id="scoreBig">0</div><div class="small" id="scoreSmall">/ 0 marks</div></div>
+        </div>
+        <div class="stat-grid" id="scoreStatGrid"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Question-by-Question Review</div>
+      <div id="reviewList"></div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="btn btn-primary" id="downloadReportBtn">&#11015; Download Report (.md)</button>
+      <button class="btn" id="retakeSameBtn">&#8635; Retake Same Config</button>
+      <button class="btn" id="scoreGoLandingBtn">&#8962; Back to Home</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REPORT QUESTION MODAL ============ -->
+<div class="modal-backdrop" id="reportModalBackdrop">
+  <div class="report-modal" id="reportModal"></div>
+</div>
+
+<script type="module" src="src/ui/main.js"></script>
+</body>
+</html>
