@@ -1,0 +1,7 @@
+body.light-theme{
+  --bg:#eef1f8; --bg2:#ffffff; --panel:#ffffff; --panel2:#f2f4fa; --panel3:#e7eaf4;
+  --border:#dde2ef; --border2:#c7cee2; --text:#161c2c; --muted:#5b6683; --muted2:#818da8;
+  --blue-glow:rgba(59,123,246,.12); --green-glow:rgba(31,174,92,.12); --red-glow:rgba(225,75,75,.12);
+}
+body.light-theme .test-top{background:linear-gradient(180deg,#ffffff,#f2f4fa);}
+body.light-theme .qstrip-wrap{background:var(--panel2);}
