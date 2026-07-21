@@ -1,0 +1,25 @@
+.modal-backdrop{position:fixed;inset:0;background:rgba(5,8,16,.65);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.modal-backdrop.open{display:flex;}
+.report-modal{width:100%;max-width:460px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.report-modal-head{background:linear-gradient(90deg,#2f5bd7,#3b7bf6);padding:16px 20px;display:flex;align-items:center;
+  gap:10px;color:#fff;font-weight:800;font-size:16px;}
+.report-modal-head .back{cursor:pointer;font-size:18px;}
+.report-modal-body{padding:18px 20px;overflow-y:auto;}
+.report-cat{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:10px;cursor:pointer;background:var(--panel2);}
+.report-cat:hover{border-color:var(--blue);}
+.report-cat.selected{border-color:var(--blue);background:var(--blue-glow);}
+.report-cat .icon{width:34px;height:34px;border-radius:50%;background:var(--blue-glow);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;font-size:15px;}
+.report-cat .txt{flex:1;}
+.report-cat .txt b{display:block;font-size:14px;color:var(--text);}
+.report-cat .txt span{font-size:12px;color:var(--muted);}
+.report-cat .chev{color:var(--muted);font-size:18px;}
+.report-modal-foot{display:flex;justify-content:space-between;gap:10px;padding:14px 20px;border-top:1px solid var(--border);}
+.report-textarea{width:100%;min-height:110px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  border-radius:var(--radius-sm);padding:10px 12px;font-family:var(--font);font-size:13.5px;resize:vertical;box-sizing:border-box;}
+.report-charcount{text-align:right;font-size:11px;color:var(--muted2);margin-top:4px;}
+.report-tip{display:flex;gap:8px;background:var(--blue-glow);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:10px 12px;font-size:12px;color:var(--muted);margin-top:12px;}
+.report-section-label{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;}
